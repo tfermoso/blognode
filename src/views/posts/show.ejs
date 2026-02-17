@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= publicacion.titulo %></title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/">Mi Blog</a>
+      <div class="nav">
+        <a class="pill" href="/dashboard">Dashboard</a>
+        <a class="pill" href="/dashboard/publicaciones">Mis publicaciones</a>
+        <a class="pill" href="/dashboard/publicaciones/<%= publicacion.id_publicacion %>/editar">Editar</a>
+        <form method="POST" action="/auth/logout" style="margin:0">
+          <button class="pill" type="submit">Salir</button>
+        </form>
+      </div>
+    </div>
+
+    <article class="post">
+      <h2 style="margin:0 0 8px;"><%= publicacion.titulo %></h2>
+
+      <div class="meta">
+        Estado: <strong><%= publicacion.estado %></strong>
+        <% if (publicacion.categoria) { %>
+          · Categoría: <strong><%= publicacion.categoria.nombre %></strong>
+        <% } %>
+        · Visitas: <%= publicacion.numero_visitas %>
+      </div>
+
+      <% if (publicacion.publicacion_etiquetas && publicacion.publicacion_etiquetas.length) { %>
+        <div class="meta" style="margin-top:8px;">
+          Etiquetas:
+          <% publicacion.publicacion_etiquetas.forEach((e, i) => { %>
+            <%= e.etiqueta %><%= i < publicacion.publicacion_etiquetas.length - 1 ? ", " : "" %>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <hr style="border:0; border-top:1px solid #d7dbe0; margin:14px 0;" />
+
+      <div style="white-space: pre-wrap;"><%= publicacion.contenido %></div>
+
+      <div class="actions" style="margin-top:16px;">
+        <a class="pill" href="/dashboard/publicaciones/<%= publicacion.id_publicacion %>/editar">Editar</a>
+        <a class="pill" href="/publicaciones/<%= publicacion.id_publicacion %>">Ver público</a>
+        <form method="POST" action="/dashboard/publicaciones/<%= publicacion.id_publicacion %>/borrar" style="margin:0"
+          onsubmit="return confirm('¿Seguro que quieres borrar esta publicación?');">
+          <button class="pill" type="submit">Borrar</button>
+        </form>
+      </div>
+    </article>
+  </div>
+</body>
+</html>

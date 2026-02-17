@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blog</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/">Mi Blog</a>
+      <div class="nav">
+        <% if (user) { %>
+          <a class="pill" href="/dashboard">Dashboard</a>
+          <form method="POST" action="/logout" style="margin:0">
+            <button class="pill" type="submit">Salir</button>
+          </form>
+        <% } else { %>
+          <a class="pill" href="/auth/login">Login</a>
+          <a class="pill primary" href="/auth/register">Registro</a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="grid">
+      <% if (!publicaciones || publicaciones.length === 0) { %>
+        <div class="post">
+          <h2>No hay publicaciones todavía</h2>
+          <div class="meta">Crea la primera desde tu dashboard.</div>
+        </div>
+      <% } %>
+
+      <% (publicaciones || []).forEach(p => { %>
+        <article class="post">
+          <h2><a href="/publicaciones/<%= p.id_publicacion %>"><%= p.titulo %></a></h2>
+          <div class="meta">
+            Por <%= p.usuario?.nombre ?? "Anónimo" %> ·
+            <%= new Date(p.fecha_publicacion).toLocaleString("es-ES") %> ·
+            <%= p.numero_visitas %> visitas
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</body>
+</html>

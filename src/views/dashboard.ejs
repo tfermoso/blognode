@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/">Mi Blog</a>
+      <div class="nav">
+        <span class="pill">Hola, <%= me.nombre %></span>
+        <a class="pill" href="/">Inicio</a>
+        <form method="POST" action="/auth/logout" style="margin:0">
+          <button class="pill" type="submit">Salir</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="post">
+        <h2>Tu perfil</h2>
+        <div class="meta"><strong>Email:</strong> <%= me.email %></div>
+        <div class="meta" style="margin-top:6px;"><strong>Publicaciones:</strong> <%= totalPublicaciones %></div>
+
+        <% if (me.biografia) { %>
+          <p style="margin:10px 0 0"><%= me.biografia %></p>
+        <% } else { %>
+          <p style="margin:10px 0 0" class="meta">Sin biografía.</p>
+        <% } %>
+      </div>
+
+      <div class="post">
+        <h2>Acciones</h2>
+        <div class="actions">
+          <a class="pill primary" href="/dashboard/publicaciones/nueva">Nueva publicación</a>
+          <a class="pill" href="/dashboard/publicaciones">Mis publicaciones</a>
+          <a class="pill" href="/dashboard/categorias">Categorías</a>
+        </div>
+        <div class="hint">Desde aquí podrás gestionar publicaciones, comentarios y categorías.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

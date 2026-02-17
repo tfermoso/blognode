@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model comentario {
+  id_comentario    Int      @id @default(autoincrement())
+  id_usuario       Int
+  id_publicacion   Int
+  texto            String
+  fecha_comentario DateTime    @default(now()) @db.Timestamptz(6)
+  fecha_edicion    DateTime?   @db.Timestamptz(6)
+  moderado         Boolean     @default(false)
+  puntuacion       Int         @default(0)
+
+  // 👇 NUEVO: comentarios anidados (self relation)
+  id_comentario_padre Int?
+  padre               comentario?   @relation("comentario_hilo", fields: [id_comentario_padre], references: [id_comentario], onDelete: Cascade, onUpdate: NoAction)
+  respuestas           comentario[]  @relation("comentario_hilo")
+
+  publicacion      publicacion @relation(fields: [id_publicacion], references: [id_publicacion], onDelete: Cascade, onUpdate: NoAction, map: "fk_comentario_publicacion")
+  usuario          usuario     @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade, onUpdate: NoAction, map: "fk_comentario_usuario")
+
+  @@index([id_publicacion], map: "idx_comentario_id_publicacion")
+  @@index([id_usuario], map: "idx_comentario_id_usuario")
+
+  // 👇 NUEVO
+  @@index([id_comentario_padre], map: "idx_comentario_id_padre")
+}
+
+
+model publicacion {
+  id_publicacion        Int                  @id @default(autoincrement())
+  id_usuario            Int
+
+  // 👇 NUEVO
+  id_categoria          Int?
+
+  titulo                String                  @db.VarChar(255)
+  contenido             String
+  fecha_publicacion     DateTime                @default(now()) @db.Timestamptz(6)
+  fecha_actualizacion   DateTime?               @db.Timestamptz(6)
+  estado                estado_publicacion      @default(borrador)
+  numero_visitas        Int                     @default(0)
+
+  comentario            comentario[]
+  usuario               usuario                 @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade, onUpdate: NoAction, map: "fk_publicacion_usuario")
+  publicacion_etiquetas publicacion_etiquetas[]
+
+  // 👇 NUEVO
+  categoria             categoria?              @relation(fields: [id_categoria], references: [id_categoria], onDelete: SetNull, onUpdate: NoAction, map: "fk_publicacion_categoria")
+
+  // 👇 NUEVO
+  megusta_publicacion   megusta_publicacion[]
+
+  @@index([id_usuario], map: "idx_publicacion_id_usuario")
+
+  // 👇 NUEVO
+  @@index([id_categoria], map: "idx_publicacion_id_categoria")
+}
+
+
+model publicacion_etiquetas {
+  id_publicacion Int
+  etiqueta       String      @db.VarChar(50)
+  publicacion    publicacion @relation(fields: [id_publicacion], references: [id_publicacion], onDelete: Cascade, onUpdate: NoAction, map: "fk_publicacion_etiquetas_publicacion")
+
+  @@id([id_publicacion, etiqueta], map: "pk_publicacion_etiquetas")
+  @@index([id_publicacion], map: "idx_publicacion_etiquetas_id_pub")
+}
+
+model usuario {
+  id_usuario        Int              @id @default(autoincrement())
+  nombre            String              @db.VarChar(100)
+  email             String              @unique @db.VarChar(100)
+  contrasena        String              @db.VarChar(255)
+  fecha_registro    DateTime            @default(now()) @db.Timestamptz(6)
+  activo            Boolean             @default(true)
+  biografia         String?
+  comentario        comentario[]
+  publicacion       publicacion[]
+  usuario_telefonos usuario_telefonos[]
+
+  // 👇 NUEVO: likes
+  megusta_publicacion megusta_publicacion[]
+
+  // 👇 NUEVO: followers/following (self relation via model seguimiento)
+  siguiendo seguimiento[] @relation("seguimientos_realizados")
+  seguidores seguimiento[] @relation("seguimientos_recibidos")
+}
+
+model usuario_telefonos {
+  id_usuario Int
+  telefono   String  @db.VarChar(30)
+  usuario    usuario @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario_telefonos_usuario")
+
+  @@id([id_usuario, telefono], map: "pk_usuario_telefonos")
+  @@index([id_usuario], map: "idx_usuario_telefonos_id_usuario")
+}
+
+enum estado_publicacion {
+  borrador
+  publicada
+  archivada
+}
+model categoria {
+  id_categoria Int        @id @default(autoincrement())
+  nombre       String        @db.VarChar(100)
+  descripcion  String?
+
+  publicacion  publicacion[]
+
+  @@unique([nombre], map: "uq_categoria_nombre")
+}
+model megusta_publicacion {
+  id_usuario     Int
+  id_publicacion Int
+  fecha_megusta  DateTime    @default(now()) @db.Timestamptz(6)
+
+  usuario        usuario     @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade, onUpdate: NoAction, map: "fk_megusta_usuario")
+  publicacion    publicacion @relation(fields: [id_publicacion], references: [id_publicacion], onDelete: Cascade, onUpdate: NoAction, map: "fk_megusta_publicacion")
+
+  @@id([id_usuario, id_publicacion], map: "pk_megusta_publicacion")
+  @@index([id_publicacion], map: "idx_megusta_id_publicacion")
+  @@index([id_usuario], map: "idx_megusta_id_usuario")
+}
+
+model seguimiento {
+  id_seguidor      Int
+  id_seguido       Int
+  fecha_seguimiento DateTime @default(now()) @db.Timestamptz(6)
+
+  seguidor usuario @relation("seguimientos_realizados", fields: [id_seguidor], references: [id_usuario], onDelete: Cascade, onUpdate: NoAction, map: "fk_seguimiento_seguidor")
+  seguido  usuario @relation("seguimientos_recibidos", fields: [id_seguido], references: [id_usuario], onDelete: Cascade, onUpdate: NoAction, map: "fk_seguimiento_seguido")
+
+  @@id([id_seguidor, id_seguido], map: "pk_seguimiento")
+  @@index([id_seguidor], map: "idx_seguimiento_id_seguidor")
+  @@index([id_seguido], map: "idx_seguimiento_id_seguido")
+}

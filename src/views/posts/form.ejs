@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= modo === "editar" ? "Editar publicación" : "Nueva publicación" %></title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/">Mi Blog</a>
+      <div class="nav">
+        <a class="pill" href="/dashboard">Dashboard</a>
+        <a class="pill" href="/dashboard/publicaciones">Mis publicaciones</a>
+        <form method="POST" action="/auth/logout" style="margin:0">
+          <button class="pill" type="submit">Salir</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="post" style="margin-bottom:12px;">
+      <h2 style="margin:0 0 6px;"><%= modo === "editar" ? "Editar publicación" : "Crear publicación" %></h2>
+      <div class="meta">Completa título, contenido, categoría, estado y etiquetas.</div>
+    </div>
+
+    <% if (error) { %>
+      <div class="error" style="max-width:980px; margin:0 auto 12px;"><%= error %></div>
+    <% } %>
+
+    <div class="post">
+      <form method="POST"
+        action="<%= modo === 'editar' ? ('/dashboard/publicaciones/' + publicacion.id_publicacion) : '/dashboard/publicaciones' %>"
+        autocomplete="off">
+
+        <label for="titulo">Título</label>
+        <input id="titulo" name="titulo" type="text" required maxlength="255"
+          value="<%= publicacion?.titulo ?? '' %>" />
+
+        <label for="contenido">Contenido</label>
+        <textarea id="contenido" name="contenido" required><%= publicacion?.contenido ?? '' %></textarea>
+
+        <label for="id_categoria">Categoría</label>
+        <select id="id_categoria" name="id_categoria">
+          <option value="">Sin categoría</option>
+          <% (categorias || []).forEach(cat => { %>
+            <option value="<%= cat.id_categoria %>"
+              <%= (publicacion?.id_categoria === cat.id_categoria) ? 'selected' : '' %>>
+              <%= cat.nombre %>
+            </option>
+          <% }) %>
+        </select>
+
+        <label for="estado">Estado</label>
+        <select id="estado" name="estado" required>
+          <% const st = publicacion?.estado ?? "borrador"; %>
+          <option value="borrador" <%= st === "borrador" ? "selected" : "" %>>borrador</option>
+          <option value="publicada" <%= st === "publicada" ? "selected" : "" %>>publicada</option>
+          <option value="archivada" <%= st === "archivada" ? "selected" : "" %>>archivada</option>
+        </select>
+
+        <label for="etiquetas">Etiquetas (separadas por coma)</label>
+        <input id="etiquetas" name="etiquetas" type="text" maxlength="500"
+          value="<%= publicacion?.etiquetas ?? '' %>"
+          placeholder="javascript, node, prisma" />
+
+        <div class="actions">
+          <button class="primary" type="submit">
+            <%= modo === "editar" ? "Guardar cambios" : "Crear publicación" %>
+          </button>
+
+          <% if (modo === "editar") { %>
+            <a class="pill" href="/publicaciones/<%= publicacion.id_publicacion %>">Ver</a>
+          <% } %>
+
+          <a class="pill" href="/dashboard/publicaciones">Cancelar</a>
+        </div>
+
+        <div class="hint">
+          Si seleccionas “publicada”, aparecerá en el listado público.
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mis publicaciones</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="topbar">
+            <a class="brand" href="/">Mi Blog</a>
+            <div class="nav">
+                <a class="pill" href="/dashboard">Dashboard</a>
+                <a class="pill primary" href="/dashboard/publicaciones/nueva">Nueva publicación</a>
+                <form method="POST" action="/auth/logout" style="margin:0">
+                    <button class="pill" type="submit">Salir</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="post" style="margin-bottom:12px;">
+            <h2 style="margin:0 0 6px;">Mis publicaciones</h2>
+            <div class="meta">Gestiona tus posts (borrador, publicada, archivada).</div>
+        </div>
+
+        <div class="grid">
+            <% if (!publicaciones || publicaciones.length===0) { %>
+                <div class="post">
+                    <h2 style="margin:0 0 6px;">Aún no has publicado nada</h2>
+                    <div class="meta">Crea tu primera publicación desde “Nueva publicación”.</div>
+                </div>
+                <% } %>
+
+                    <% (publicaciones || []).forEach(p=> { %>
+                        <article class="post">
+                            <h2 style="margin:0 0 6px;">
+                                <a href="/dashboard/publicaciones/<%= p.id_publicacion %>">
+                                    <%= p.titulo %>
+                                </a>
+                            </h2>
+
+                            <div class="meta">
+                                Estado: <strong>
+                                    <%= p.estado %>
+                                </strong>
+                                <% if (p.categoria) { %>
+                                    · Categoría: <strong>
+                                        <%= p.categoria.nombre %>
+                                    </strong>
+                                    <% } %>
+                            </div>
+
+                            <div class="meta" style="margin-top:6px;">
+                                Publicada: <%= new Date(p.fecha_publicacion).toLocaleString("es-ES") %>
+                                    <% if (p.fecha_actualizacion) { %>
+                                        · Actualizada: <%= new Date(p.fecha_actualizacion).toLocaleString("es-ES") %>
+                                            <% } %>
+                                                · Visitas: <%= p.numero_visitas %>
+                            </div>
+
+                            <div class="actions" style="margin-top:12px;">
+                                <a class="pill"
+                                    href="/dashboard/publicaciones/<%= p.id_publicacion %>/editar">Editar</a>
+
+                                <form method="POST" action="/dashboard/publicaciones/<%= p.id_publicacion %>/borrar"
+                                    style="margin:0"
+                                    onsubmit="return confirm('¿Seguro que quieres borrar esta publicación?');">
+                                    <button class="pill" type="submit">Borrar</button>
+                                </form>
+
+                                <% if (p.estado==="publicada" ) { %>
+                                    <a class="pill" href="/publicaciones/<%= p.id_publicacion %>">Ver público</a>
+                                    <% } %>
+                            </div>
+                        </article>
+                        <% }) %>
+        </div>
+    </div>
+</body>
+
+</html>

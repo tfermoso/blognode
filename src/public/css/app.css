@@ -1,0 +1,73 @@
+:root{
+  --bg:#f6f7f9;
+  --card:#fff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#d7dbe0;
+  --shadow:0 6px 20px rgba(0,0,0,.08);
+  --danger-bg:#ffe8e8;
+  --danger-border:#ffb6b6;
+  --danger-text:#8a0f0f;
+}
+
+*{ box-sizing:border-box; }
+body{
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  margin:0; padding:24px; background:var(--bg); color:var(--text);
+}
+
+a{ color:var(--text); text-decoration:none; font-weight:600; }
+a:hover{ text-decoration:underline; }
+
+.card{
+  max-width:420px; margin:0 auto; background:var(--card);
+  padding:20px; border-radius:12px; box-shadow:var(--shadow);
+}
+
+h1{ margin:0 0 14px; font-size:22px; }
+
+label{ display:block; margin:12px 0 6px; font-weight:600; font-size:14px; }
+
+input, textarea, select{
+  width:100%; padding:10px 12px; border:1px solid var(--border);
+  border-radius:10px; font-size:14px;
+}
+textarea{ min-height:90px; resize:vertical; }
+
+.error{
+  margin:10px 0 0; padding:10px 12px;
+  background:var(--danger-bg); border:1px solid var(--danger-border);
+  color:var(--danger-text); border-radius:10px;
+}
+
+.actions{ margin-top:16px; display:flex; gap:10px; align-items:center; }
+
+button{
+  padding:10px 14px; border:0; border-radius:10px;
+  cursor:pointer; font-weight:700;
+}
+button.primary{ background:var(--text); color:#fff; }
+
+.hint{ margin-top:14px; font-size:13px; color:var(--muted); }
+
+/* Layout para páginas tipo index/dashboard */
+.wrap{ max-width:980px; margin:0 auto; }
+.topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.brand{ font-weight:900; font-size:18px; color:var(--text); text-decoration:none; }
+.nav{ display:flex; gap:10px; align-items:center; }
+.pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:999px;
+  border:1px solid var(--border); background:#fff;
+  text-decoration:none; color:var(--text);
+  font-weight:700; font-size:13px;
+}
+.pill.primary{ background:var(--text); color:#fff; border-color:var(--text); }
+.grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+@media (min-width:860px){ .grid{ grid-template-columns: 1fr 1fr; } }
+.post{
+  background:#fff; border:1px solid var(--border); border-radius:12px;
+  padding:14px; box-shadow: var(--shadow);
+}
+.post h2{ margin:0 0 8px; font-size:16px; }
+.meta{ font-size:13px; color:var(--muted); }
