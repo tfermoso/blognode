@@ -71,3 +71,22 @@ button.primary{ background:var(--text); color:#fff; }
 }
 .post h2{ margin:0 0 8px; font-size:16px; }
 .meta{ font-size:13px; color:var(--muted); }
+.metrics{
+  display:flex;
+  gap:12px;
+  margin-top:10px;
+  font-size:14px;
+  opacity:.9;
+}
+.metric{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:999px;
+  background:rgba(0,0,0,.02);
+}
+.metric strong{
+  font-weight:700;
+}

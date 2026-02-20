@@ -34,10 +34,21 @@
       <% (publicaciones || []).forEach(p => { %>
         <article class="post">
           <h2><a href="/publicaciones/<%= p.id_publicacion %>"><%= p.titulo %></a></h2>
+
           <div class="meta">
             Por <%= p.usuario?.nombre ?? "Anónimo" %> ·
             <%= new Date(p.fecha_publicacion).toLocaleString("es-ES") %> ·
             <%= p.numero_visitas %> visitas
+          </div>
+
+          <!-- NUEVO: barra de métricas (visual por ahora) -->
+          <div class="metrics" aria-label="Métricas de la publicación">
+            <span class="metric" title="Número de comentarios">
+              💬 <strong><%= p.num_comentarios ?? 0 %></strong> comentarios
+            </span>
+            <span class="metric" title="Número de likes">
+              ❤️ <strong><%= p.num_likes ?? 0 %></strong> likes
+            </span>
           </div>
         </article>
       <% }) %>
