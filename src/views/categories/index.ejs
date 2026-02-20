@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Categorías</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/">Mi Blog</a>
+      <div class="nav">
+        <a class="pill" href="/dashboard">Dashboard</a>
+        <a class="pill" href="/dashboard/publicaciones">Mis publicaciones</a>
+        <a class="pill" href="/dashboard/categorias">Categorías</a>
+        <form method="POST" action="/auth/logout" style="margin:0">
+          <button class="pill" type="submit">Salir</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="post" style="margin-bottom:12px;">
+      <h2 style="margin:0 0 6px;">Categorías</h2>
+      <div class="meta">Crea, edita y elimina categorías.</div>
+    </div>
+
+    <% if (error) { %>
+      <div class="error" style="max-width:980px; margin:0 auto 12px;"><%= error %></div>
+    <% } %>
+
+    <!-- Crear categoría -->
+    <div class="post" style="margin-bottom:12px;">
+      <h3 style="margin:0 0 10px;">Nueva categoría</h3>
+
+      <form method="POST" action="/dashboard/categorias" autocomplete="off">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" type="text" required maxlength="255" />
+
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="3"></textarea>
+
+        <div class="actions">
+          <button class="primary" type="submit">Crear categoría</button>
+        </div>
+
+        <div class="hint">
+          La descripción es opcional.
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado -->
+    <div class="post">
+      <h3 style="margin:0 0 10px;">Listado</h3>
+
+      <% if (!categorias || categorias.length === 0) { %>
+        <div class="meta">Todavía no hay categorías.</div>
+      <% } else { %>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <% categorias.forEach(cat => { %>
+            <div class="post" style="padding:14px; border-radius:12px;">
+              <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+                <div>
+                  <div style="font-weight:700; font-size:18px; line-height:1.2;">
+                    <%= cat.nombre %>
+                  </div>
+                  <div class="meta" style="margin-top:4px;">
+                    <%= cat.descripcion ? cat.descripcion : "Sin descripción" %>
+                  </div>
+                  <div class="meta" style="margin-top:6px;">
+                    ID: <%= cat.id_categoria %>
+                  </div>
+                </div>
+
+                <!-- Acciones -->
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <!-- Botón para mostrar/ocultar editor inline -->
+                  <button class="pill" type="button"
+                    onclick="toggleEdit('<%= cat.id_categoria %>')">
+                    Editar
+                  </button>
+
+                  <!-- Eliminar (POST) -->
+                  <form method="POST" action="/dashboard/categorias/<%= cat.id_categoria %>/delete"
+                        style="margin:0" onsubmit="return confirm('¿Eliminar la categoría &quot;<%= cat.nombre %>&quot;?');">
+                    <button class="pill" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Editor inline -->
+              <div id="edit-<%= cat.id_categoria %>" style="display:none; margin-top:12px;">
+                <form method="POST" action="/dashboard/categorias/<%= cat.id_categoria %>" autocomplete="off">
+                  <label for="nombre-<%= cat.id_categoria %>">Nombre</label>
+                  <input id="nombre-<%= cat.id_categoria %>" name="nombre" type="text"
+                         required maxlength="255" value="<%= cat.nombre %>" />
+
+                  <label for="desc-<%= cat.id_categoria %>">Descripción</label>
+                  <textarea id="desc-<%= cat.id_categoria %>" name="descripcion" rows="3"><%= cat.descripcion ?? "" %></textarea>
+
+                  <div class="actions">
+                    <button class="primary" type="submit">Guardar cambios</button>
+                    <button class="pill" type="button" onclick="toggleEdit('<%= cat.id_categoria %>')">Cancelar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <script>
+    function toggleEdit(id) {
+      const el = document.getElementById('edit-' + id);
+      if (!el) return;
+      el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

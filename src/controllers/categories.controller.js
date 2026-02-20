@@ -3,7 +3,7 @@ const prisma = require("../db/prisma");
 exports.list = async (req, res, next) => {
   try {
     const categorias = await prisma.categoria.findMany({ orderBy: { nombre: "asc" } });
-    res.render("categorias", { categorias, error: null });
+    res.render("categories/index", { categorias, error: null });
   } catch (e) { next(e); }
 };
 
